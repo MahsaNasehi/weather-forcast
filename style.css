@@ -1,0 +1,217 @@
+* {
+  box-sizing: border-box;
+  direction: rtl;
+  font-family: Tahoma, sans-serif;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: linear-gradient(to top, #1c1c1e, #2c2c2e);
+  color: #f1f1f1;
+}
+
+.wrapper {
+  max-width: 800px;
+  margin: auto;
+  padding: 20px;
+}
+
+header h1 {
+  text-align: center;
+  color: #a3e635; /* سبز لیمویی */
+}
+
+.location-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.btn {
+  padding: 8px 14px;
+  background-color: #7c3aed; /* بنفش */
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s;
+}
+
+.btn:hover {
+  background-color: #6d28d9;
+}
+
+.dropdown select {
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #555;
+  font-size: 14px;
+  background-color: #333;
+  color: #fff;
+}
+
+.location-output {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #86efac; /* سبز ملایم */
+}
+
+.now-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2a2a2a;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+.current-panel {
+  flex: 1;
+}
+
+.temperature-display {
+  font-size: 36px;
+  font-weight: bold;
+  margin: 10px 0;
+  color: #facc15; /* زرد لیمویی */
+}
+
+.unit {
+  font-size: 18px;
+  color: #fde68a;
+}
+
+.details {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #ccc;
+}
+
+.forecast-blocks,
+.week-forecast {
+  background: #1f1f1f;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.02);
+}
+
+.forecast-hourly h3,
+.week-forecast h3 {
+  margin-top: 0;
+  color: #93c5fd; /* آبی روشن */
+  font-size: 18px;
+}
+
+.hours-container,
+.week-container {
+  display: flex;
+  overflow-x: auto;
+  gap: 10px;
+  padding-top: 10px;
+}
+
+.hourly-item,
+.daily-item {
+  min-width: 100px;
+  text-align: center;
+  background: #333;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #f1f5f9;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.02);
+}
+
+footer {
+  text-align: center;
+  margin-top: 30px;
+  color: #888;
+  font-size: 13px;
+}
+
+/* Loading */
+.loading-box {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 999;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.spinner {
+  border: 6px solid #555;
+  border-top: 6px solid #38bdf8; /* آبی روشن */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error Modal */
+.error-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-inner {
+  background: #27272a;
+  padding: 25px;
+  border-radius: 10px;
+  text-align: center;
+  width: 80%;
+  max-width: 400px;
+  color: #fff;
+}
+
+.modal-inner h3 {
+  margin-top: 0;
+  color: #f87171; /* قرمز روشن */
+}
+
+.modal-inner p {
+  margin: 10px 0;
+  color: #e4e4e7;
+}
+
+@media screen and (max-width: 600px) {
+  .now-section {
+    flex-direction: column;
+    align-items: center;
+  }
+  .hours-container,
+  .week-container {
+    flex-wrap: nowrap;
+  }
+}
