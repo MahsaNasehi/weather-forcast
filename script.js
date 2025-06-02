@@ -79,6 +79,12 @@ function loadProvinceList() {
 }
 
 function locateByIP() {
+    const userConfirmed = confirm("Do you allow the application to detect your location using your IP address?");
+
+    if (!userConfirmed) {
+        return; // Exit if user denies permission
+    }
+
     toggleLoading(true);
     fetch("http://ip-api.com/json/?fields=status,message,lat,lon")
         .then(res => res.json())
@@ -87,27 +93,31 @@ function locateByIP() {
                 matchNearestCity(data.lat, data.lon);
             } else throw new Error(data.message);
         })
-        .catch(() => showError("IP Location Error", "Please try another method"))
+        .catch(() => showError("IP Location Error", "Please try another method to detect location."))
         .finally(() => toggleLoading(false));
 }
 
+
 function locateByGeo() {
+    const userConfirmed = confirm("Do you allow the application to access your location via your browser (GPS)?");
+
+    if (!userConfirmed) {
+        return; // Exit if user denies permission
+    }
+
+    toggleLoading(true);
+
     if (!navigator.geolocation) {
-        showError("Error", "Geolocation is not supported by this browser");
+        showError("Error", "Geolocation is not supported by your browser.");
+        toggleLoading(false);
         return;
     }
 
-    // نمایش یک پیغام راهنما قبل از درخواست اجازه
-    if (confirm("This site wants to access your location to find the nearest province. Do you want to allow it?")) {
-        toggleLoading(true);
-        navigator.geolocation.getCurrentPosition(
-            pos => matchNearestCity(pos.coords.latitude, pos.coords.longitude),
-            err => handleGeoError(err),
-            { timeout: 10000 }
-        );
-    } else {
-        showError("Permission Denied", "Location access was denied by the user.");
-    }
+    navigator.geolocation.getCurrentPosition(
+        pos => matchNearestCity(pos.coords.latitude, pos.coords.longitude),
+        err => handleGeoError(err),
+        { timeout: 10000 }
+    );
 }
 
 
@@ -123,7 +133,7 @@ function matchNearestCity(lat, lon) {
         }
     });
 
-    refs.resultBox.textContent = `Nearest Location: ${nearest.name}`;
+    refs.resultBox.textContent = `nearest city: ${nearest.name}`;
     refs.selectBox.value = `${nearest.lat},${nearest.lon}`;
     fetchWeather(`${nearest.lat},${nearest.lon}`);
 }
@@ -138,10 +148,10 @@ function getDistance(lat1, lon1, lat2, lon2) {
 }
 
 function fetchWeather(location) {
-    fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${location}&days=7&lang=en`)
+    fetch(`https://api.weatherapi.com/v1/forecast.json?key=${API_KEY}&q=${location}&days=7&lang=fa`)
         .then(res => res.json())
         .then(data => showWeather(data))
-        .catch(() => showError("Data Fetch Error", "There was a problem retrieving weather data"))
+        .catch(() => showError("دریافت اطلاعات", "مشکلی در دریافت اطلاعات آب‌وهوا رخ داد"))
         .finally(() => toggleLoading(false));
 }
 
@@ -161,22 +171,6 @@ function showWeather(data) {
     renderDaily(data.forecast.forecastday);
 }
 
-function renderDaily(days) {
-    refs.weekBox.innerHTML = '';
-    days.forEach(day => {
-        const date = new Date(day.date).toLocaleDateString('en-US', { weekday: 'long' });
-        const div = document.createElement("div");
-        div.className = "daily-item";
-        div.innerHTML = `
-            <div>${date}</div>
-            <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" width="30">
-            <div>${day.day.condition.text}</div>
-            <div><span>${Math.round(day.day.maxtemp_c)}°</span> / <span>${Math.round(day.day.mintemp_c)}°</span></div>
-        `;
-        refs.weekBox.appendChild(div);
-    });
-}
-
 function renderHourly(hours, container) {
     container.innerHTML = '';
     hours.forEach(hr => {
@@ -194,17 +188,31 @@ function renderHourly(hours, container) {
     });
 }
 
+function renderDaily(days) {
+    refs.weekBox.innerHTML = '';
+    days.forEach(day => {
+        const date = new Date(day.date).toLocaleDateString('fa-IR', { weekday: 'long' });
+        const div = document.createElement("div");
+        div.className = "daily-item";
+        div.innerHTML = `
+            <div>${date}</div>
+            <img src="https:${day.day.condition.icon}" alt="${day.day.condition.text}" width="30">
+            <div>${day.day.condition.text}</div>
+            <div><span>${Math.round(day.day.maxtemp_c)}°</span> / <span>${Math.round(day.day.mintemp_c)}°</span></div>
+        `;
+        refs.weekBox.appendChild(div);
+    });
+}
+
+function windArrow(deg) {
+    const dirs = ['↑','↗','→','↘','↓','↙','←','↖'];
+    return dirs[Math.round(deg / 45) % 8];
+}
 
 function showError(title, msg) {
     refs.errorTitle.textContent = title;
     refs.errorMsg.textContent = msg;
     refs.errorModal.style.display = "flex";
-}
-
-
-function windArrow(deg) {
-    const dirs = ['↑','↗','→','↘','↓','↙','←','↖'];
-    return dirs[Math.round(deg / 45) % 8];
 }
 
 function toggleLoading(state) {
@@ -214,12 +222,12 @@ function toggleLoading(state) {
 function handleGeoError(err) {
     let msg = "";
     switch (err.code) {
-        case 1: msg = "Permission denied"; break;
-        case 2: msg = "Position unavailable"; break;
-        case 3: msg = "Timeout expired"; break;
-        default: msg = "Unknown error"; break;
+        case 1: msg = "اجازه موقعیت داده نشد."; break;
+        case 2: msg = "موقعیت در دسترس نیست."; break;
+        case 3: msg = "درخواست موقعیت بیش از حد طول کشید."; break;
+        default: msg = "خطای نامشخص."; break;
     }
-    showError("Geolocation Error", msg);
+    showError("موقعیت‌یابی", msg);
     toggleLoading(false);
 }
 
